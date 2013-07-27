@@ -7,17 +7,18 @@ class MoviesController < ApplicationController
   end
 
   def index
-    debugger
-    if !params[:ratings].present?
-      params[:ratings] = {"G"=>1, "PG"=>1, "PG-13"=>1, "R"=>1}
-    end
-    #params[:ratings] = {"G"=>1, "PG"=>1, "PG-13"=>1, "R"=>1}
+    #debugger
     @all_ratings = Movie.ratings
+
+    if !params[:ratings].present?
+      @temp = Hash.new
+      @all_ratings.each {|rating| @temp["#{rating}"] = 1}
+      params[:ratings] = @temp
+    end
+
     @choosen_ratings = (params[:ratings].present? ? params[:ratings] : []) #if else
     @order = (params[:order].present? ? params[:order] : []) #if else
     @movies = Movie.find(:all, :conditions => {:rating => @choosen_ratings.keys}, :order => @order)# if params[:ratings].present?
-    #Movie.find(:all, :conditions => ['title = ?', "Aladdin"], :order => "title ASC")
-    #Movie.find(:all, :conditions => {:rating => ["G","PG"]}, :order => "title ASC")
   end
 
   def new
