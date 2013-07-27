@@ -7,19 +7,29 @@ class MoviesController < ApplicationController
   end
 
   def index
-    debugger
+    #debugger
     @all_ratings = Movie.ratings
 
-    if !session[:ratings].present?
-      @temp = Hash.new
-      @all_ratings.each {|rating| @temp["#{rating}"] = 1}
-      params[:ratings] = @temp
+    if !session[:ratings].present? #first time page case
+      session[:ratings] = Hash[@all_ratings.map {|rating| ["#{rating}", 1]}]
+      redirect = true
     end
 
-    session[:ratings] = params[:ratings] if params[:ratings].present? 
-    @choosen_ratings = (params[:ratings].present? ? params[:ratings] : session[:ratings]) #if else
-    @order = (params[:order].present? ? params[:order] : []) #if else
+    session[:ratings] = params[:ratings] unless (params[:ratings] == nil)
+    session[:order] = params[:order] unless (params[:order] == nil)
+
+    #@choosen_ratings = (params[:ratings].present? ? params[:ratings] : session[:ratings]) #if else
+     #@order = (params[:order].present? ? params[:order] : session[:order]) #if else
+    @choosen_ratings = params.fetch(:ratings, session[:ratings])
+    @order = params.fetch(:order, session[:order])
+    redirect = true if (session[:order] != params[:order])
+    redirect = true if (session[:ratings] != params[:ratings])
+    #debugger
     @movies = Movie.find(:all, :conditions => {:rating => @choosen_ratings.keys}, :order => @order)# if params[:ratings].present?
+
+    if redirect then
+      redirect_to movies_path(:order => @order, :ratings => @choosen_ratings)
+    end
   end
 
   def new
