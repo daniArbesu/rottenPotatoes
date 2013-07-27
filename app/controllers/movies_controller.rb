@@ -7,7 +7,6 @@ class MoviesController < ApplicationController
   end
 
   def index
-    #debugger
     @all_ratings = Movie.ratings
 
     if !session[:ratings].present? #first time page case
@@ -18,13 +17,9 @@ class MoviesController < ApplicationController
     session[:ratings] = params[:ratings] unless (params[:ratings] == nil)
     session[:order] = params[:order] unless (params[:order] == nil)
 
-    #@choosen_ratings = (params[:ratings].present? ? params[:ratings] : session[:ratings]) #if else
-     #@order = (params[:order].present? ? params[:order] : session[:order]) #if else
     @choosen_ratings = params.fetch(:ratings, session[:ratings])
     @order = params.fetch(:order, session[:order])
-    redirect = true if (session[:order] != params[:order])
-    redirect = true if (session[:ratings] != params[:ratings])
-    #debugger
+    redirect = true if ((session[:order] != params[:order]) or (session[:ratings] != params[:ratings]))
     @movies = Movie.find(:all, :conditions => {:rating => @choosen_ratings.keys}, :order => @order)# if params[:ratings].present?
 
     if redirect then
