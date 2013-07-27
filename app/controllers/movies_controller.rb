@@ -8,6 +8,9 @@ class MoviesController < ApplicationController
 
   def index
     debugger
+    if !params[:ratings].present?
+      params[:ratings] = {"G"=>1, "PG"=>1, "PG-13"=>1, "R"=>1}
+    end
     #params[:ratings] = {"G"=>1, "PG"=>1, "PG-13"=>1, "R"=>1}
     @all_ratings = Movie.ratings
     @choosen_ratings = (params[:ratings].present? ? params[:ratings] : []) #if else
